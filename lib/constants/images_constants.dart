@@ -14,4 +14,7 @@ class ImagesConstants {
 
   /// Image path for 'santa-idle-right.png'
   static const String santaRightIdleSprite = 'santa-slide-right.png';
+
+  /// Image path for 'gift-sprite.png'
+  static const String giftSprite = 'gift-sprite.png';
 }

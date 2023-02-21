@@ -1,3 +1,4 @@
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 
 import '/constants/constants.dart';
@@ -52,6 +53,11 @@ class SantaComponent extends SpriteGroupComponent<SantaMovementStateType>
     width = _spriteHeight * 1.42;
     // Set the initial position of the sprite in the middle of itself
     anchor = Anchor.center;
+
+    // Add a special component
+    // This component allow us to know when this component is interaction with another component
+    // Without this component collision is not possible
+    add(CircleHitbox());
   }
 
   @override
