@@ -1,9 +1,9 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame_audio/flame_audio.dart';
-import 'package:flutter_christmas_gift/components/ice_component.dart';
-import 'package:flutter_christmas_gift/constants/sounds_constants.dart';
 
+import '/components/ice_component.dart';
+import '/constants/sounds_constants.dart';
 import '/constants/constants.dart';
 import '/constants/images_constants.dart';
 import '/games/gift_grab_game.dart';
@@ -14,7 +14,7 @@ import '/games/gift_grab_game.dart';
 /// In this case sprite will we handle based on [SantaMovementStateType] enum
 class SantaComponent extends SpriteGroupComponent<SantaMovementStateType>
     with HasGameRef<GiftGrabGame>, CollisionCallbacks {
-  final double _spriteHeight = 200;
+  final double _spriteHeight = 100;
   final double _spriteSpeed = 400;
   // Screen bound of the component
   late double _rightBound;
@@ -102,14 +102,6 @@ class SantaComponent extends SpriteGroupComponent<SantaMovementStateType>
 
   // Handle when santa is freeze
   void _freezeSanta() {
-    // Set frozen state
-    isFrozen = true;
-    // Add movement sprite image
-    current = SantaMovementStateType.idle;
-  }
-
-  // Handle when santa is not freezed
-  void _unFreezedSanta() {
     if (!isFrozen) {
       // Sound frozen audio
       FlameAudio.play(SoundsConstants.freezeSound);
@@ -118,6 +110,14 @@ class SantaComponent extends SpriteGroupComponent<SantaMovementStateType>
       // Add frozen sprite image
       current = SantaMovementStateType.frozen;
     }
+  }
+
+  // Handle when santa is not freezed
+  void _unFreezedSanta() {
+    // Set frozen state
+    isFrozen = false;
+    // Add movement sprite image
+    current = SantaMovementStateType.idle;
   }
 
   // Set components boundaries
