@@ -1,7 +1,6 @@
-import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
-import '/games/gift_grab_game.dart';
+import '/screens/main_menu.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,9 +12,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: GameWidget(game: GiftGrabGame()),
+      home: MainMenu(),
     );
   }
 }
