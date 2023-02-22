@@ -1,5 +1,8 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame_audio/flame_audio.dart';
+import 'package:flutter_christmas_gift/components/ice_component.dart';
+import 'package:flutter_christmas_gift/constants/sounds_constants.dart';
 
 import '/constants/constants.dart';
 import '/constants/images_constants.dart';
@@ -10,7 +13,7 @@ import '/games/gift_grab_game.dart';
 /// We add a group of sprites, to handle a map of different sprites images based on some class
 /// In this case sprite will we handle based on [SantaMovementStateType] enum
 class SantaComponent extends SpriteGroupComponent<SantaMovementStateType>
-    with HasGameRef<GiftGrabGame> {
+    with HasGameRef<GiftGrabGame>, CollisionCallbacks {
   final double _spriteHeight = 200;
   final double _spriteSpeed = 400;
   // Screen bound of the component
@@ -18,6 +21,9 @@ class SantaComponent extends SpriteGroupComponent<SantaMovementStateType>
   late double _leftBound;
   late double _upBound;
   late double _downBound;
+
+  bool isFrozen = false;
+  final Timer _timer = Timer(3); // How long santa is going to be frozen
 
   /// Constructor
   SantaComponent({required this.joyStick});
@@ -35,11 +41,14 @@ class SantaComponent extends SpriteGroupComponent<SantaMovementStateType>
         await gameRef.loadSprite(ImagesConstants.santaLeftIdleSprite);
     Sprite spriteRightIdle =
         await gameRef.loadSprite(ImagesConstants.santaRightIdleSprite);
+    Sprite spriteSantaFrozen =
+        await gameRef.loadSprite(ImagesConstants.santaFrozenSprite);
     // Set all the sprites images of the component
     sprites = {
       SantaMovementStateType.idle: spriteIdle,
       SantaMovementStateType.slideLeft: spriteLeftIdle,
       SantaMovementStateType.slideRight: spriteRightIdle,
+      SantaMovementStateType.frozen: spriteSantaFrozen,
     };
 
     _setComponentBoundaries();
@@ -64,14 +73,51 @@ class SantaComponent extends SpriteGroupComponent<SantaMovementStateType>
   void update(double dt) {
     super.update(dt);
 
-    if (joyStick.direction == JoystickDirection.idle) {
-      current = SantaMovementStateType.idle;
-      return;
-    }
+    if (!isFrozen) {
+      if (joyStick.direction == JoystickDirection.idle) {
+        current = SantaMovementStateType.idle;
+        return;
+      }
 
-    _validateComponentBoundaries();
-    _moveComponent();
-    position.add(joyStick.relativeDelta * _spriteSpeed * dt);
+      _validateComponentBoundaries();
+      _moveComponent();
+      position.add(joyStick.relativeDelta * _spriteSpeed * dt);
+    } else {
+      // Update timer
+      _timer.update(dt);
+
+      if (_timer.finished) {
+        _unFreezedSanta();
+      }
+    }
+  }
+
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollision(intersectionPoints, other);
+    if (other is IceComponent) {
+      _freezeSanta();
+    }
+  }
+
+  // Handle when santa is freeze
+  void _freezeSanta() {
+    // Set frozen state
+    isFrozen = true;
+    // Add movement sprite image
+    current = SantaMovementStateType.idle;
+  }
+
+  // Handle when santa is not freezed
+  void _unFreezedSanta() {
+    if (!isFrozen) {
+      // Sound frozen audio
+      FlameAudio.play(SoundsConstants.freezeSound);
+      // Set frozen state
+      isFrozen = true;
+      // Add frozen sprite image
+      current = SantaMovementStateType.frozen;
+    }
   }
 
   // Set components boundaries

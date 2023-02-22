@@ -8,4 +8,7 @@ enum SantaMovementStateType {
 
   /// Move to the right
   slideRight,
+
+  ///  No movement and is frozen
+  frozen,
 }
